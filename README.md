@@ -10,12 +10,37 @@ C'est un travail individuel qui est attendu de vous. Chaque apprenant devra pré
 
 Ces deux compétences sont validées par l'épreuve E5.
 
+## Travail à réaliser
+Avant de commencer la résolution du ticket, commencez par lire les attendus du rapport, pour pouvoir relever toutes les informations attendues aux bons moments. 
+
+- Tracez le bug en utilisant les outils de debug et les points d'arrêt.
+- Corrigez le bug et testez la solution.
+- Mettez à jour la branche avec la correction documentée.
+- Ajoutez des contrôles dans le code pour remonter des informations sur le nouveau code.
+- Ajoutez un dashboard pour assurer le suivi de l'application.
+- Une des métriques doit permettre le suivi du modèle.
+- Ajoutez la documentation du dashboard.
+- Redéployez, un merge, la solution sur votre dépôt GitHub.
+- Rédigez votre rapport.
+
+## Rapport
+Le rapport compte entre 2 et 5 pages.
+
+- Présentation de l'application.
+- Présentation de l'incident technique.
+- Présentez le message d'erreur en console et expliquez-le.
+- Expliquez les recherches faites pour résoudre l'incident technique.
+- Expliquez la correction apportée et le test de validation.
+- Expliquez le versionnage de la correction dans Git et le déploiement sur GitHub.
+- Ajoutez la documentation sur le dashboard en expliquant le choix des métriques, le choix de la technologie, la mise à jour des indicateurs et les alertes.
+
+
 ## Les tickets d'incident
-Chaque branche représente un ticket d'incident. Il y a 3 branches, donc 3 tickets.
+Chaque branche représente un ticket d'incident. Il y a 4 branches, donc 4 tickets.
 
 Les tickets sont répartis de la façon suivante : 
 - ticket 1 : Corto Gayet, Khaoula Mili
-- ticket 2 : Carol Novak, Simon Brouard, Nathalie Bediée
+- ticket 2 : Carole Novak, Simon Brouard, Nathalie Bediée
 - ticket 3 : Malgorzata Ryczer-Dumas, Tangi le Cadre, Lucas Henneuse 
 - ticket 4 : Lucie Jouan, Hugo Babin, Mathieu Laronce
 
