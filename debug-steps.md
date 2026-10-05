@@ -57,17 +57,15 @@ cursor.execute(
 
 Utilisation d'un schéma pydantic plus rigide pour lever une exception en cas de problème
 class Prediction(BaseModel) :
-   **model_config = ConfigDict(extra="forbid")
-    id: int **
+   **model_config = ConfigDict(extra="forbid")**
 - Ajout de forbid pour lever une exception si le schéma contient une clé supplémentaire
-- suppression du type None pour lever une exception si le type de id n'est pas int
+- Le type None doit être conservé car le pipeline est requête 1 (avant infarence -> None puis après inférence écriture en base avec id)
 - Comme aucun des autres champs n'accepte le type None, le schéma doit recevoir tous les champs avec une valeur typée non null
 
 ### Test unitaire
 
 En s'appuyant sur le schema pydantic, création de test unitaires pour validation (mock du retour API avec des cas test)
 Cas de test pour id
- "valeur_nulle"
  "int_mauvais_type_str"
  "int_mauvais_type_float"
  "cle_supplementaire"
@@ -98,6 +96,9 @@ La route n'est pas sécurisée...
 
 3. Mise en place du monitoring
 
+Utilisation de Langfuse v4 auto-hébergé pour monitorer les inférences CNN
+
+Ajout d'une route check_health pour monitorer la disponibilité du modèle
 
 
 

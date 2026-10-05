@@ -3,7 +3,7 @@ from pydantic import BaseModel, ConfigDict
 class Prediction(BaseModel) :
     model_config = ConfigDict(extra="forbid")
 
-    id: int
+    id: int | None = None
     image : str
     label : str
     commentaire : str

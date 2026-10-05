@@ -20,6 +20,22 @@ DB_PASSWORD = os.environ["MYSQL_PASSWORD"]
 DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
 DB_PORT = int(os.getenv("DB_PORT", "3306"))
 
+LANGFUSE_ENABLED = os.getenv("LANGFUSE_ENABLED", "false").lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
+LANGFUSE_PUBLIC_KEY = os.getenv("LANGFUSE_PUBLIC_KEY", "")
+LANGFUSE_SECRET_KEY = os.getenv("LANGFUSE_SECRET_KEY", "")
+LANGFUSE_BASE_URL = os.getenv("LANGFUSE_BASE_URL", "")
+LANGFUSE_ENV = os.getenv("LANGFUSE_ENV", "development")
+LANGFUSE_RELEASE = os.getenv("LANGFUSE_RELEASE", "")
+try:
+    LANGFUSE_SAMPLE_RATE = float(os.getenv("LANGFUSE_SAMPLE_RATE", "1"))
+except ValueError:
+    LANGFUSE_SAMPLE_RATE = 1.0
+
 # Vide, absent, invalide ou <= 0 : conservation infinie des logs.
 try:
     LOG_RETENTION_DAYS = int(os.getenv("LOG_RETENTION_DAYS", "")) or None

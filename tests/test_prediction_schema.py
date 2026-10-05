@@ -35,31 +35,35 @@ def client(monkeypatch):
         yield test_client
 
 
-def test_prediction_schema_accepts_valid_response(client, monkeypatch):
-    valid_prediction = {**PREDICTION, "id": 1}
-    monkeypatch.setattr(Service_Prediction, "lister_predictions", lambda: [valid_prediction])
+@pytest.mark.parametrize(
+    "prediction",
+    [
+        pytest.param({**PREDICTION, "id": 1}, id="id_int"),
+        pytest.param({**PREDICTION, "id": None}, id="id_none"),
+    ],
+)
+def test_prediction_schema_accepts_valid_response(client, monkeypatch, prediction, request):
+    monkeypatch.setattr(Service_Prediction, "lister_predictions", lambda: [prediction])
 
     response = client.get("/predictions/")
 
+    print(f"Test true {request.node.callspec.id} : assert {response.json()} == {[prediction]}")
     assert response.status_code == 200
-    print(f'Test true : assert {response.json()} == {[valid_prediction]}')
-    assert response.json() == [valid_prediction]
+    assert response.json() == [prediction]
 
 
 @pytest.mark.parametrize(
     "prediction",
     [
-        pytest.param({**PREDICTION, "id": None}, id="valeur_nulle"),
         pytest.param({**PREDICTION, "id": "abc&"}, id="int_mauvais_type_str"),
         pytest.param({**PREDICTION, "id": "1.1"}, id="int_mauvais_type_float"),
         pytest.param({**PREDICTION, "id": 1, "greeting": "bonjour"}, id="cle_supplementaire"),
-        pytest.param({**PREDICTION},  id="cle-absente"),
     ],
 )
 def test_prediction_schema_rejects_invalid_response(client, monkeypatch, prediction, request):
     monkeypatch.setattr(Service_Prediction, "lister_predictions", lambda: [prediction])
-    
-    print(f'Test falty {request.node.callspec.id} : assert {prediction} raises error {ResponseValidationError}')
+
+    print(f"Test falty {request.node.callspec.id} : assert {prediction} raises {ResponseValidationError}")
 
     with pytest.raises(ResponseValidationError):
         client.get("/predictions/")

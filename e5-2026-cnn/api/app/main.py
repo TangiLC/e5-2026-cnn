@@ -15,6 +15,8 @@ from app.bdd.service import Service_Prediction
 from app.bdd.prediction import Prediction
 from app.config import LOG_RETENTION_DAYS
 from app import logger as journal
+from app.observability import flush as flush_observability
+from app.observability import observe, update_observation
 
 PURGE_INTERVAL_SECONDS = 24 * 3600
 
@@ -36,6 +38,7 @@ async def lifespan(app):
     yield
     if tache_purge:
         tache_purge.cancel()
+    flush_observability()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -51,30 +54,60 @@ async def database_error(request: Request, exc: DatabaseError):
 def index():
     return "API Prediction!"
 
+
+@app.get("/model_health")
+def model_health():
+    with observe("model_health") as observation:
+        try:
+            cnn.get_model()
+        except Exception as exc:
+            logging.getLogger(__name__).exception("Le modèle CNN est indisponible")
+            update_observation(
+                observation,
+                level="ERROR",
+                status_message="Le modèle CNN est indisponible",
+            )
+            raise HTTPException(
+                status_code=503,
+                detail="Modèle indisponible",
+            ) from exc
+
+        result = {"status": "ok", "model": "CNN"}
+        update_observation(observation, output=result)
+        return result
+
+
 @app.post("/predictions/satellite/")
 def upload_image(file: UploadFile = File(...)):
     suffix = Path(file.filename or "").suffix.lower()
-    if suffix not in {".jpg", ".jpeg", ".png"}:
-        file.file.close()
-        raise HTTPException(status_code=400, detail="Format non supporté")
-    file_path = Path(UPLOAD_FOLDER) / f"{uuid4().hex}{suffix}"
-    try:
-        with file_path.open("wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+    with observe(
+        "satellite_prediction",
+        input_data={"file_format": suffix},
+        metadata={"model": "CNN"},
+    ) as observation:
+        if suffix not in {".jpg", ".jpeg", ".png"}:
+            file.file.close()
+            raise HTTPException(status_code=400, detail="Format non supporté")
+        file_path = Path(UPLOAD_FOLDER) / f"{uuid4().hex}{suffix}"
         try:
-            with Image.open(file_path) as image:
-                image.verify()
-        except (UnidentifiedImageError, OSError, SyntaxError, Image.DecompressionBombError) as exc:
-            raise HTTPException(status_code=400, detail="Image invalide") from exc
-        label = cnn.predict_image(file_path)
-        prediction = Prediction(image=str(file_path), label=label, commentaire="OK", modele="CNN")
-        Service_Prediction.sauvegarder_prediction(prediction)
-        return {"prediction": prediction}
-    except Exception:
-        file_path.unlink(missing_ok=True)
-        raise
-    finally:
-        file.file.close()
+            with file_path.open("wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            try:
+                with Image.open(file_path) as image:
+                    image.verify()
+            except (UnidentifiedImageError, OSError, SyntaxError, Image.DecompressionBombError) as exc:
+                raise HTTPException(status_code=400, detail="Image invalide") from exc
+            label = cnn.predict_image(file_path)
+            prediction = Prediction(image=str(file_path), label=label, commentaire="OK", modele="CNN")
+            Service_Prediction.sauvegarder_prediction(prediction)
+            result = {"prediction": prediction}
+            update_observation(observation, output={"label": label})
+            return result
+        except Exception:
+            file_path.unlink(missing_ok=True)
+            raise
+        finally:
+            file.file.close()
 
 
 @app.get("/predictions/", response_model=list[Prediction])
