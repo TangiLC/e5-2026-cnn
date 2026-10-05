@@ -6,7 +6,7 @@ import streamlit as st
 import requests
 
 # Configuration des URLs de l'API
-from config import API_UPLOAD_URL, API_PREDICTIONS_URL, API_LOGS_URL
+from config import API_UPLOAD_URL, API_PREDICTIONS_URL, API_LOGS_URL, API_HEALTH_URL
 
 # Titre de l'application
 st.title("🛰️ Application CNN - Classification d'Images Satellites")
@@ -31,6 +31,20 @@ try:
     )
 except requests.exceptions.RequestException as e:
     st.sidebar.error(f"Erreur lors du chargement du JSON : {e}")
+
+# Vérification de la disponibilité du modèle
+health_status = st.session_state.get("health_status")
+health_label = "🩺 Vérifier modèle" + (f" [{health_status}]" if health_status else "")
+if st.sidebar.button(health_label):
+    try:
+        health = requests.get(API_HEALTH_URL, timeout=(5, 30))
+        if health.status_code == 200:
+            st.session_state["health_status"] = health.json().get("model", "OK")
+        else:
+            st.session_state["health_status"] = f"error {health.status_code}"
+    except requests.exceptions.RequestException:
+        st.session_state["health_status"] = "error"
+    st.rerun()
 
 # Page : Upload d'image
 if menu == "📤 Upload d'image":
@@ -74,7 +88,7 @@ elif menu == "📋 Voir les prédictions":
         pprint(response)
         response.raise_for_status()
         predictions = response.json()
-        st.json(predictions)
+        # st.json(predictions) ### debug
 
         # Vérifier s'il y a des prédictions
         if predictions:
