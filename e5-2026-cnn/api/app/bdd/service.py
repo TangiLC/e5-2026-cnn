@@ -25,7 +25,8 @@ class Service_Prediction(Connexion):
 
                 bdd.commit()
                 prediction.id = cursor.lastrowid
-            observability.update_observation(span, output={"prediction_id": prediction.id})
+                logger.info("Prédiction enregistrée (id=%d | label=%s)", prediction.id, prediction.label)
+            observability.update_observation(span, output={"predic_id": prediction.id, "label": prediction.label})
         return prediction
 
     @classmethod

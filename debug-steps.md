@@ -59,17 +59,22 @@ Utilisation d'un schéma pydantic plus rigide pour lever une exception en cas de
 class Prediction(BaseModel) :
    **model_config = ConfigDict(extra="forbid")**
 - Ajout de forbid pour lever une exception si le schéma contient une clé supplémentaire
-- Le type None doit être conservé car le pipeline est requête 1 (avant infarence -> None puis après inférence écriture en base avec id)
+- Le type None doit être conservé car le pipeline est requête 1 (avant inférence -> None puis après inférence écriture en base avec id)
 - Comme aucun des autres champs n'accepte le type None, le schéma doit recevoir tous les champs avec une valeur typée non null
 
 ### Test unitaire
 
 En s'appuyant sur le schema pydantic, création de test unitaires pour validation (mock du retour API avec des cas test)
-Cas de test pour id
+- Cas de test valides pour id
+ "id_int"
+ "id_none"
+- Cas de test invalides pour id
  "int_mauvais_type_str"
  "int_mauvais_type_float"
  "cle_supplementaire"
- "cle-absente"
+
+Les 5 tests sont lancés dans l'environnement et passent.
+ ![Capture d'écran de pytest](./ressources/pytest_001.png)
 
 
 ### Mise en place de monitoring et logging
