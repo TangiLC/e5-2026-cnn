@@ -19,3 +19,11 @@ DB_USER = os.environ["MYSQL_USER"]
 DB_PASSWORD = os.environ["MYSQL_PASSWORD"]
 DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
 DB_PORT = int(os.getenv("DB_PORT", "3306"))
+
+# Vide, absent, invalide ou <= 0 : conservation infinie des logs.
+try:
+    LOG_RETENTION_DAYS = int(os.getenv("LOG_RETENTION_DAYS", "")) or None
+except ValueError:
+    LOG_RETENTION_DAYS = None
+if LOG_RETENTION_DAYS is not None and LOG_RETENTION_DAYS < 0:
+    LOG_RETENTION_DAYS = None

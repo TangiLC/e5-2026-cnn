@@ -1,4 +1,6 @@
 import json
+from pprint import pprint
+import sys
 
 import streamlit as st
 import requests
@@ -66,8 +68,10 @@ elif menu == "📋 Voir les prédictions":
     # Récupérer les prédictions depuis l'API
     try:
         response = requests.get(API_PREDICTIONS_URL, timeout=(5, 30))
+        pprint(response)
         response.raise_for_status()
         predictions = response.json()
+        st.json(predictions)
 
         # Vérifier s'il y a des prédictions
         if predictions:

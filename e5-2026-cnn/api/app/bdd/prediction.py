@@ -1,7 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 class Prediction(BaseModel) :
-    id: int | None = None
+    model_config = ConfigDict(extra="forbid")
+
+    id: int
     image : str
     label : str
     commentaire : str

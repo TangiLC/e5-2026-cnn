@@ -26,6 +26,16 @@ CREATE TABLE IF NOT EXISTS `labels` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE IF NOT EXISTS `logs` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `timestamp` datetime(3) NOT NULL,
+  `level` varchar(10) NOT NULL,
+  `module` varchar(100) NOT NULL,
+  `message` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `timestamp` (`timestamp`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 INSERT INTO `labels` (`label`) VALUES
 ('forêt'),
 ('mer'),

@@ -1,0 +1,6 @@
+.env
+databases/
+__pycache__/
+*.pyc
+.venv/
+/api/satelite_images/

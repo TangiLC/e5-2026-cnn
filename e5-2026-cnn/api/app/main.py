@@ -1,5 +1,7 @@
+import asyncio
 from contextlib import asynccontextmanager
 from pathlib import Path
+from pprint import pprint
 from uuid import uuid4
 import logging
 import shutil
@@ -11,12 +13,29 @@ from app.modele import cnn
 from app.config import UPLOAD_FOLDER
 from app.bdd.service import Service_Prediction
 from app.bdd.prediction import Prediction
+from app.config import LOG_RETENTION_DAYS
+from app import logger as journal
+
+PURGE_INTERVAL_SECONDS = 24 * 3600
+
+
+async def purger_logs_periodiquement():
+    while True:
+        try:
+            await asyncio.to_thread(journal.purge_old)
+        except Exception:
+            logging.getLogger(__name__).exception("Échec de la purge des logs")
+        await asyncio.sleep(PURGE_INTERVAL_SECONDS)
+
 
 @asynccontextmanager
 async def lifespan(app):
     Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
     cnn.get_model()
+    tache_purge = asyncio.create_task(purger_logs_periodiquement()) if LOG_RETENTION_DAYS else None
     yield
+    if tache_purge:
+        tache_purge.cancel()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -60,4 +79,6 @@ def upload_image(file: UploadFile = File(...)):
 
 @app.get("/predictions/", response_model=list[Prediction])
 def list_predictions():
-    return Service_Prediction.lister_predictions()
+    predictions = Service_Prediction.lister_predictions()
+    pprint(predictions)
+    return predictions

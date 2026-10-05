@@ -38,6 +38,7 @@ services:
       DB_HOST: db
       DB_PORT: 3306
       UPLOAD_FOLDER: /code/satelite_images
+      LOG_RETENTION_DAYS: ${LOG_RETENTION_DAYS:-}
       PYTHONUNBUFFERED: 1
     ports:
       - "${API_PORT:-8081}:80"
@@ -53,6 +54,8 @@ services:
   client:
     build: ./client
     container_name: client_cnn
+    volumes:
+      - ./client:/app
     environment:
       API_BASE_URL: http://web:80
       PYTHONUNBUFFERED: 1
