@@ -54,3 +54,12 @@ def purge_old(retention_days=LOG_RETENTION_DAYS):
         supprimes = cursor.rowcount
     logger.info("Purge des logs (rétention=%dj, supprimés=%d)", retention_days, supprimes)
     return supprimes
+
+
+def lister_logs():
+    with Connexion.ouvrir_connexion() as (_, cursor):
+        cursor.execute(
+            "SELECT id, timestamp, level, module, message "
+            "FROM logs ORDER BY timestamp DESC, id DESC"
+        )
+        return cursor.fetchall()

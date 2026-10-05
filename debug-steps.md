@@ -77,8 +77,28 @@ Cas de test pour id
 ### Mise en place de monitoring et logging
 
 1. Ajout d'un logger horodaté
+
 Création d'un script logger utilisant logging et timestamp
+
 Ajout d'une table "logs" à la base mysql
-le logger écrit dans 
+
+le logger écrit dans la base.
+
+La methode purge est appelée toutes les 24h pour supprimer les logs anciens 
+(config dans .env : LOG_RETENTION_DAYS) si le champs existe et est valide (>0)
+
+2. Ajout d'une route GET all_logs, ajout d'une page dans streamlit
+
+Récupération des logs stockés dans la bdd
+
+Affichage des logs
+
+La route n'est pas sécurisée...
+
+
+3. Mise en place du monitoring
+
+
+
 
 

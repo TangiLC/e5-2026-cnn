@@ -82,3 +82,8 @@ def list_predictions():
     predictions = Service_Prediction.lister_predictions()
     pprint(predictions)
     return predictions
+
+
+@app.get("/all_logs")
+def all_logs():
+    return journal.lister_logs()

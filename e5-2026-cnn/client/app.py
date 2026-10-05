@@ -6,14 +6,17 @@ import streamlit as st
 import requests
 
 # Configuration des URLs de l'API
-from config import API_UPLOAD_URL, API_PREDICTIONS_URL
+from config import API_UPLOAD_URL, API_PREDICTIONS_URL, API_LOGS_URL
 
 # Titre de l'application
 st.title("🛰️ Application CNN - Classification d'Images Satellites")
 
 # Ajout de la **sidebar** pour la navigation
 st.sidebar.title("🔍 Navigation")
-menu = st.sidebar.radio("Navigation", ["📤 Upload d'image", "📋 Voir les prédictions"])
+menu = st.sidebar.radio(
+    "Navigation",
+    ["📤 Upload d'image", "📋 Voir les prédictions", "📜 Logs"],
+)
 
 # Télécharger les prédictions indépendamment de la page affichée.
 try:
@@ -86,3 +89,17 @@ elif menu == "📋 Voir les prédictions":
     
     except requests.exceptions.RequestException as e:
         st.error(f"❌ Erreur lors de la récupération des prédictions : {e}")
+
+# Page : logs enregistrés
+elif menu == "📜 Logs":
+    st.header("📜 Journaux de l'application")
+    try:
+        response = requests.get(API_LOGS_URL, timeout=(5, 30))
+        response.raise_for_status()
+        logs = response.json()
+        if logs:
+            st.dataframe(logs, use_container_width=True)
+        else:
+            st.info("Aucun log enregistré pour le moment.")
+    except requests.exceptions.RequestException as e:
+        st.error(f"❌ Erreur lors de la récupération des logs : {e}")
