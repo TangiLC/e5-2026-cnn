@@ -9,4 +9,6 @@ API_BASE_URL = os.getenv(
 ).rstrip("/")
 API_UPLOAD_URL = f"{API_BASE_URL}/predictions/satellite/"
 API_PREDICTIONS_URL = f"{API_BASE_URL}/predictions/"
+API_LOGS_URL = f"{API_BASE_URL}/all_logs"
+API_HEALTH_URL = f"{API_BASE_URL}/model_health"
 API_URL = API_UPLOAD_URL

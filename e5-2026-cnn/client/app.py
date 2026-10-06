@@ -1,17 +1,22 @@
 import json
+from pprint import pprint
+import sys
 
 import streamlit as st
 import requests
 
 # Configuration des URLs de l'API
-from config import API_UPLOAD_URL, API_PREDICTIONS_URL
+from config import API_UPLOAD_URL, API_PREDICTIONS_URL, API_LOGS_URL, API_HEALTH_URL
 
 # Titre de l'application
 st.title("🛰️ Application CNN - Classification d'Images Satellites")
 
 # Ajout de la **sidebar** pour la navigation
 st.sidebar.title("🔍 Navigation")
-menu = st.sidebar.radio("Navigation", ["📤 Upload d'image", "📋 Voir les prédictions"])
+menu = st.sidebar.radio(
+    "Navigation",
+    ["📤 Upload d'image", "📋 Voir les prédictions", "📜 Logs"],
+)
 
 # Télécharger les prédictions indépendamment de la page affichée.
 try:
@@ -26,6 +31,20 @@ try:
     )
 except requests.exceptions.RequestException as e:
     st.sidebar.error(f"Erreur lors du chargement du JSON : {e}")
+
+# Vérification de la disponibilité du modèle
+health_status = st.session_state.get("health_status")
+health_label = "🩺 Vérifier modèle" + (f" [{health_status}]" if health_status else "")
+if st.sidebar.button(health_label):
+    try:
+        health = requests.get(API_HEALTH_URL, timeout=(5, 30))
+        if health.status_code == 200:
+            st.session_state["health_status"] = health.json().get("model", "OK")
+        else:
+            st.session_state["health_status"] = f"error {health.status_code}"
+    except requests.exceptions.RequestException:
+        st.session_state["health_status"] = "error"
+    st.rerun()
 
 # Page : Upload d'image
 if menu == "📤 Upload d'image":
@@ -66,8 +85,10 @@ elif menu == "📋 Voir les prédictions":
     # Récupérer les prédictions depuis l'API
     try:
         response = requests.get(API_PREDICTIONS_URL, timeout=(5, 30))
+        pprint(response)
         response.raise_for_status()
         predictions = response.json()
+        # st.json(predictions) ### debug
 
         # Vérifier s'il y a des prédictions
         if predictions:
@@ -82,3 +103,17 @@ elif menu == "📋 Voir les prédictions":
     
     except requests.exceptions.RequestException as e:
         st.error(f"❌ Erreur lors de la récupération des prédictions : {e}")
+
+# Page : logs enregistrés
+elif menu == "📜 Logs":
+    st.header("📜 Journaux de l'application")
+    try:
+        response = requests.get(API_LOGS_URL, timeout=(5, 30))
+        response.raise_for_status()
+        logs = response.json()
+        if logs:
+            st.dataframe(logs, use_container_width=True)
+        else:
+            st.info("Aucun log enregistré pour le moment.")
+    except requests.exceptions.RequestException as e:
+        st.error(f"❌ Erreur lors de la récupération des logs : {e}")

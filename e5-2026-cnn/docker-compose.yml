@@ -38,6 +38,14 @@ services:
       DB_HOST: db
       DB_PORT: 3306
       UPLOAD_FOLDER: /code/satelite_images
+      LOG_RETENTION_DAYS: ${LOG_RETENTION_DAYS:-}
+      LANGFUSE_ENABLED: ${LANGFUSE_ENABLED:-false}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      LANGFUSE_BASE_URL: ${LANGFUSE_BASE_URL:-}
+      LANGFUSE_ENV: ${LANGFUSE_ENV:-development}
+      LANGFUSE_RELEASE: ${LANGFUSE_RELEASE:-}
+      LANGFUSE_SAMPLE_RATE: ${LANGFUSE_SAMPLE_RATE:-1}
       PYTHONUNBUFFERED: 1
     ports:
       - "${API_PORT:-8081}:80"
@@ -53,6 +61,8 @@ services:
   client:
     build: ./client
     container_name: client_cnn
+    volumes:
+      - ./client:/code
     environment:
       API_BASE_URL: http://web:80
       PYTHONUNBUFFERED: 1
