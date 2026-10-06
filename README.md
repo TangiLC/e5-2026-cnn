@@ -42,7 +42,7 @@ L'ensemble (client, API, base, Adminer) s'exécute avec Docker Compose. Les serv
 
 ### Récupération du projet
 
-Prérequis : Git, Docker avec Docker Compose, et Python 3.11 pour un lancement local <!-- à confirmer : version Python (3.11 dans l'installation d'origine, tests lancés en 3.12) -->.
+Prérequis : Git, Docker avec Docker Compose, et Python 3.11 pour un lancement local 
 
 ```bash
 git clone https://github.com/TangiLC/e5-2026-cnn.git
@@ -259,7 +259,7 @@ python -m pytest --cov=app --cov-report=term-missing
 
 - `ticket3` conserve le bug ; `bugfix-ticket3` porte la correction et les tests, afin de garder l'historique de la résolution.
 - Intégration dans la branche principale par pull request (merge) depuis `bugfix-ticket3`.
-- Une git diff peut être faite entre la branche `main` et `ticket3` pour pointer les corrections apportées.
+- Une git diff peut être faite entre la branche `ticket3` et `bugfix-ticket3` pour pointer les corrections apportées.
 
 
 ---
@@ -346,7 +346,7 @@ Un script `observability.py` fait le lien entre l'app et Langfuse, en créant le
 | Trace | Surveillance | KPI | Alerte |
 | --- | --- | --- | --- |
 | `satellite_prediction` | **Modèle** : inférence du CNN | Latence (ms) | Warning 60 ms, alerte 80 ms (dev) |
-| `model_health` | **Modèle** : disponibilité du CNN | Disponible / erreur | <!-- à confirmer : alerte ou non --> |
+| `model_health` | **Modèle** : disponibilité du CNN | Disponible / erreur | Non alerté |
 | `db.read.predictions` | BDD : lecture des prédictions | Latence (ms) | Non alerté |
 | `db.write.prediction` | BDD : écriture d'une prédiction | Latence (ms) | Non alerté |
 
