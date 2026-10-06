@@ -1,3 +1,6 @@
+# Merci de lire le readme de la branche ticket3 pour prendre connaissance du bug à corriger.
+# Merci de lire le readme de la branche bugfix-ticket3 pour la présentation du monitoring et résolution d'incident technique.
+
 # Classification d'images satellites
 Cas pratique sur un CNN
 
