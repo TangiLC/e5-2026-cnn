@@ -12,7 +12,7 @@ from PIL import Image, UnidentifiedImageError
 from app.modele import cnn
 from app.config import UPLOAD_FOLDER
 from app.bdd.service import Service_Prediction
-from app.bdd.prediction import Prediction
+from app.bdd.prediction import PredictionCreate, PredictionRead
 from app.config import LOG_RETENTION_DAYS
 from app import logger as journal
 from app.observability import flush as flush_observability
@@ -98,7 +98,7 @@ def upload_image(file: UploadFile = File(...)):
             except (UnidentifiedImageError, OSError, SyntaxError, Image.DecompressionBombError) as exc:
                 raise HTTPException(status_code=400, detail="Image invalide") from exc
             label = cnn.predict_image(file_path)
-            prediction = Prediction(image=str(file_path), label=label, commentaire="OK", modele="CNN")
+            prediction = PredictionCreate(image=str(file_path), label=label, commentaire="OK", modele="CNN")
             Service_Prediction.sauvegarder_prediction(prediction)
             result = {"prediction": prediction}
             update_observation(observation, output={"label": label})
@@ -110,7 +110,7 @@ def upload_image(file: UploadFile = File(...)):
             file.file.close()
 
 
-@app.get("/predictions/", response_model=list[Prediction])
+@app.get("/predictions/", response_model=list[PredictionRead])
 def list_predictions():
     predictions = Service_Prediction.lister_predictions()
     pprint(predictions)
