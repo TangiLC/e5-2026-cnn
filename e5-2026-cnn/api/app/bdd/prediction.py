@@ -5,7 +5,6 @@ from pydantic import BaseModel, ConfigDict
 class PredictionCreate(BaseModel):
     """Prédiction avant insertion : pas d'id."""
     model_config = ConfigDict(extra="forbid")
-
     image: str
     label: str
     commentaire: str
