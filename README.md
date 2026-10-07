@@ -394,3 +394,13 @@ flowchart LR
 ![Alerte Langfuse, webhook et e-mail reçu](./ressources/langfuse_webhook_001.png)
 
 >__Remarque__ : les événements du webhook (secret refusé, échec d'envoi du mail) ne sont pas encore écrits dans la table `logs` ; amélioration à prévoir en v2.
+
+## Boucle de rétroaction
+
+Une colonne de la table predictions (`commentaire`) stocke des données liées à la prédiction.
+
+Ces données peuvent être utilisées pour l'analyse à posteriori de la qualité de l'inférence.
+
+Les images avec un commentaire spécifique peuvent être réutilisées dans les cycles d'entraînement suivants.
+
+>Actuellement, cette feature n'est pas implémentée, les commentaires sont toujours insérés `OK` par défaut, il n'y a pas d'endpoint pour modifier ce champ (ex: label attendu en cas d'erreur ?).
